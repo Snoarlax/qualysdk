@@ -70,24 +70,28 @@ def call_api(
                     f"Invalid override method {override_method}. Valid methods are: {SCHEMA['method']}."
                 )
 
-        # match the url_type to get the proper template:
-        match CALL_SCHEMA[module]["url_type"]:
-            case "gateway":
-                url = f"https://gateway.{auth.platform}.apps.qualys.com{SCHEMA['endpoint']}"
-            case "api":
-                if (
-                    auth.platform == "qg1"
-                ):  # Special case for qg1 platform: no qg or apps in the URL
-                    url = f"https://qualysapi.qualys.com{SCHEMA['endpoint']}"
-                else:
-                    url = f"https://qualysapi.{auth.platform}.apps.qualys.com{SCHEMA['endpoint']}"
-            case "base":
-                if auth.platform == "qg1":
-                    url = f"https://qualysguard.qualys.com{SCHEMA['endpoint']}"
-                else:
-                    url = f"https://qualysguard.{auth.platform}.apps.qualys.com{SCHEMA['endpoint']}"
-            case _:
-                raise ValueError(f"Invalid url_type {SCHEMA['url_type']}.")
+        if auth.url:
+            url = f"{auth.url}"
+        else:
+            # match the url_type to get the proper template:
+            match CALL_SCHEMA[module]["url_type"]:
+                case "gateway":
+                    url = f"https://gateway.{auth.platform}.apps.qualys.com"
+                case "api":
+                    if (
+                        auth.platform == "qg1"
+                    ):  # Special case for qg1 platform: no qg or apps in the URL
+                        url = f"https://qualysapi.qualys.com"
+                    else:
+                        url = f"https://qualysapi.{auth.platform}.apps.qualys.com"
+                case "base":
+                    if auth.platform == "qg1":
+                        url = f"https://qualysguard.qualys.com"
+                    else:
+                        url = f"https://qualysguard.{auth.platform}.apps.qualys.com"
+                case _:
+                    raise ValueError(f"Invalid url_type {SCHEMA['url_type']}.")
+        url += SCHEMA['endpoint']
 
         # if token auth, check if token is not 4+ hours old:
         if isinstance(auth, TokenAuth):

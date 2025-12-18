@@ -26,6 +26,8 @@ class BaseAuthentication:
     )  # Hide password from repr. If the user wants to see it that badly, they can do so manually with the password attribute.
     token: Optional[str] = field(default=None, repr=False)  # same goes for token ^^
     auth_type: Literal["basic", "token"] = field(init=False)
+    region: Literal["US1","US2","US3","US4","EU1","EU2","EU3","IN1","CA1","AE1","UK1","AU1","KSA1"]= field(default="US1", init=True)
+
 
     def __post_init__(self) -> None:
         """

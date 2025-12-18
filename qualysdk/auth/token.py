@@ -15,7 +15,7 @@ from ..exceptions import AuthenticationError
 class TokenAuth(BasicAuth):
     """
     TokenAuth - handles API endpoints that require JWT authentication.
-    This class will take the username, password, and platform attributes from BasicAuth and use them to generate a JWT token via the Qualys JWT-generatio API.
+    This class will take the username, password, and region attributes from BasicAuth and use them to generate a JWT token via the Qualys JWT-generatio API.
 
     Attributes:
     ```
@@ -42,7 +42,7 @@ class TokenAuth(BasicAuth):
         """
         generates the JWT token from the Qualys API
         """
-        url = f"https://gateway.{self.platform}.apps.qualys.com/auth"
+        url = f"{self.url}"
 
         payload = {
             "username": self.username,
@@ -53,7 +53,7 @@ class TokenAuth(BasicAuth):
 
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-        print(f"Generating token for {self.username} on {self.platform} platform.")
+        print(f"Generating token for {self.username} on {self.region} region")
 
         r = post(url, headers=headers, data=payload)
 
@@ -72,7 +72,7 @@ class TokenAuth(BasicAuth):
     @classmethod
     def from_dict(cls, data: dict):
         """
-        provided the dictionary keys 'username', 'password', and 'platform' are present,
+        provided the dictionary keys 'username', 'password', and 'region' are present,
         creates a TokenAuth object from the dictionary
         """
         if all(key in data for key in ["username", "password"]):
